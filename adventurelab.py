@@ -89,7 +89,7 @@ def generate_gpx(data):
 				cacheShortDescriptionElement.set('html', 'false')
 				
 				cacheLongDescriptionElement = SubElement(cacheElement, '{' + gsns + '}long_description')
-				cacheLongDescriptionElement.text = '<img src="' + location['KeyImageUrl'] + '"/><br/><br/>' + (location['Description'] + '<br/><br/>' + location['Question'] + '<br/><br/>' + str(location['CompletionAwardMessage']))
+				cacheLongDescriptionElement.text = '<img src="' + location['KeyImageUrl'] + '"/><br/><br/>' + (location['Description'] + '<br/><br/>' + location['Question'] + ('<br/><br/>' + location['CompletionAwardMessage'] if location['CompletionAwardMessage'] else ''))
 				cacheLongDescriptionElement.set('html', 'false')
 				
 		print('-----', file=sys.stderr)
