@@ -25,8 +25,8 @@ def generate_gpx_header():
 	authorElement = SubElement(gpx, 'author')
 	authorElement.text = 'FJSFerreira'
 	
-	timeElement = SubElement(gpx, 'time')
-	timeElement.text = str(datetime.now())
+	#timeElement = SubElement(gpx, 'time')
+	#timeElement.text = str(datetime.now())
 	
 	keywordsElement = SubElement(gpx, 'keywords')
 	keywordsElement.text = 'lab cache, cache, geocache, groundspeak'
