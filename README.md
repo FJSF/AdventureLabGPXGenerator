@@ -4,7 +4,7 @@ A tool to generate a GPX file from Geocaching Adventure Labs (to use in c:geo or
 
 Syntax:
 ```
-python3 adventurelab.py <latitude> <longitude> <radius>
+python3 adventurelab.py <latitude> <longitude> <radius> <directory>
 ```
 
-The GPX file is printed to the standard output.
+A new directory called "Adventure Lab" is created inside the given directory, with a GPX file for each adventure.
