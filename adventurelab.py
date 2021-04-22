@@ -2,6 +2,7 @@ import sys
 import urllib.request
 import ssl
 import json
+import os
 
 from datetime import datetime
 from lxml.etree import Element, SubElement, QName, tostring, CDATA
@@ -25,19 +26,15 @@ def generate_gpx_header():
 	authorElement = SubElement(gpx, 'author')
 	authorElement.text = 'FJSFerreira'
 	
-	#timeElement = SubElement(gpx, 'time')
-	#timeElement.text = str(datetime.now())
-	
-	keywordsElement = SubElement(gpx, 'keywords')
-	keywordsElement.text = 'lab cache, cache, geocache, groundspeak'
-	
 	return gpx
 
 def generate_gpx(data):
-	gpx = generate_gpx_header()
 	
 	for adventure in data['Items']:
-		print('Getting adventure data: ' + adventure['Title'] + '...', file=sys.stderr)
+	
+		file = open(directory + '/Adventure Lab/' + (adventure['Title'].replace('/', ' ')) + '.gpx', 'w')
+		
+		gpx = generate_gpx_header()
 		
 		adventure_url = 'https://labs-api.geocaching.com/Api/Adventures/'+adventure['Id']
 		
@@ -45,7 +42,6 @@ def generate_gpx(data):
 			data = json.loads(url.read().decode())
 			
 			for index, location in enumerate(data['GeocacheSummaries']):
-				print('Getting location data: ' + location['Title'] + '...', file=sys.stderr)
 				
 				wptElement = SubElement(gpx, 'wpt')
 				wptElement.set('lat', str(location['Location']['Latitude']))
@@ -92,9 +88,9 @@ def generate_gpx(data):
 				cacheLongDescriptionElement.text = '<img src="' + location['KeyImageUrl'] + '"/><br/><br/>' + (location['Description'] + '<br/><br/>' + location['Question'] + ('<br/><br/>' + location['CompletionAwardMessage'] if location['CompletionAwardMessage'] else ''))
 				cacheLongDescriptionElement.set('html', 'false')
 				
-		print('-----', file=sys.stderr)
-				
-	return gpx
+		file.write('<?xml version="1.0" encoding="utf-8"?>')
+		file.write('\n')
+		file.write(tostring(gpx, encoding='unicode', method='xml', pretty_print=True))
 
 def fetch_data():
 	list_url = 'https://labs-api.geocaching.com/Api/Adventures/SearchV3?origin.latitude='+latitude+'&origin.longitude='+longitude+'&radiusMeters='+radius
@@ -104,15 +100,17 @@ def fetch_data():
 		return generate_gpx(data)
 
 if len(sys.argv) < 2:
-	print('Parameter error! Usage: <latitude> <longitude> <radius, default=60000>', file=sys.stderr)
+	print('Parameter error! Usage: <latitude> <longitude> <radius> <directory>', file=sys.stderr)
 else:
 	latitude = sys.argv[1]
 	longitude = sys.argv[2]
-	radius = sys.argv[3] if len(sys.argv) > 3 else '60000'
+	radius = sys.argv[3]
+	directory = sys.argv[4]
 	
-	print('Center: ' + latitude + ',' + longitude, file=sys.stderr)
-	print('Radius: ' + radius + ' m', file=sys.stderr)
+	new_directory = directory + '/Adventure Lab'
 	
-	gpx = fetch_data()
-	print('<?xml version="1.0" encoding="utf-8"?>')
-	print(tostring(gpx, encoding='unicode', method='xml', pretty_print=True))
+	if(not os.path.exists(new_directory)):
+		os.mkdir(new_directory)
+	
+	fetch_data()
+	
